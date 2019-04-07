@@ -1,107 +1,77 @@
-import {Subject} from "rxjs";
-import {assertNever, ReduceResult, Sink, SinkSubject, Source} from "../../../mvi";
-import {flatMap, map, scan} from "rxjs/operators";
+import {assertNever, Core, ReduceResult} from "../../../mvi";
 import {SignUpEvent} from "./SignUpEvent";
 import {SignUpState} from "./SignUpState";
 import {SignUpEffect} from "./SignUpEffect";
-import {SignInState} from "../signin/SignInState";
-import {SignInEffect} from "../signin/SignInEffects";
 
-class SignUpCore {
+let initState = {
+    isLoading: false,
+    username: "",
+    password: "",
+    email: ""
+};
 
-    public readonly eventsIn: Sink<SignUpEvent>;
+let reducer = (lastResult: ReduceResult<SignUpState, SignUpEffect>, event: SignUpEvent) => {
+    let result: ReduceResult<SignUpState, SignUpEffect>;
+    switch (event.kind) {
 
-    public readonly statesOut: Source<SignUpState>;
-    public readonly effectsOut: Source<SignUpEffect>;
+        case "on-sign-in":
+            result = {
+                state: lastResult.state,
+                effects: [{
+                    kind: "sign-in"
+                }]
+            };
+            return result;
 
-    private readonly initState = {
-        isLoading: false,
-        username: "",
-        password: "",
-        email: ""
-    };
+        case "on-sign-up":
+            result = {
+                state: lastResult.state,
+                effects: []
+            };
+            return result;
 
-    private readonly reducer = (lastResult: ReduceResult<SignUpState, SignUpEffect>, event: SignUpEvent) => {
-        let result: ReduceResult<SignUpState, SignUpEffect>;
-        switch (event.kind) {
+        case "on-name-change":
+            result = {
+                state: lastResult.state,
+                effects: []
+            };
+            return result;
 
-            case "on-sign-in":
-                result = {
-                    state: lastResult.state,
-                    effects: [{
-                        kind: "sign-in"
-                    }]
-                };
-                return result;
+        case "on-password-change":
+            result = {
+                state: lastResult.state,
+                effects: []
+            };
+            return result;
 
-            case "on-sign-up":
-                result = {
-                    state: lastResult.state,
-                    effects: []
-                };
-                return result;
+        case "on-email-change":
+            result = {
+                state: lastResult.state,
+                effects: []
+            };
+            return result;
 
-            case "on-name-change":
-                result = {
-                    state: lastResult.state,
-                    effects: []
-                };
-                return result;
+        case "on-sign-up-ok":
+            result = {
+                state: lastResult.state,
+                effects: []
+            };
+            return result;
 
-            case "on-password-change":
-                result = {
-                    state: lastResult.state,
-                    effects: []
-                };
-                return result;
+        case "on-sign-up-error":
+            result = {
+                state: lastResult.state,
+                effects: []
+            };
+            return result;
 
-            case "on-email-change":
-                result = {
-                    state: lastResult.state,
-                    effects: []
-                };
-                return result;
+        default: return assertNever(event);
+    }
+};
 
-            case "on-sign-up-ok":
-                result = {
-                    state: lastResult.state,
-                    effects: []
-                };
-                return result;
-
-            case "on-sign-up-error":
-                result = {
-                    state: lastResult.state,
-                    effects: []
-                };
-                return result;
-
-            default: return assertNever(event);
-        }
-    };
-
+class SignUpCore extends Core<SignUpState, SignUpEvent, SignUpEffect>{
     constructor() {
-
-        let eventsIn = new Subject<SignUpEvent>();
-
-        let initResult = {
-            state: this.initState,
-            effects: []
-        };
-
-        let resultOut = eventsIn.pipe(
-            scan<SignUpEvent, ReduceResult<SignUpState, SignUpEffect>>(this.reducer , initResult)
-        );
-
-        this.statesOut = resultOut.pipe(
-            map(result => result.state)
-        );
-
-        this.effectsOut = resultOut.pipe(
-            flatMap(result => result.effects)
-        );
-
-        this.eventsIn = new SinkSubject(eventsIn);
+        super(initState, [], reducer)
     }
 }
 
