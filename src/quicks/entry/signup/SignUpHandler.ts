@@ -1,5 +1,5 @@
 import {assertNever, Sink, Source} from "../../../mvi";
-import {EntryEvent} from "../EntryEvents";
+import {EntryEvent} from "../EntryEvent";
 import {SignUpEffect} from "./SignUpEffect";
 import {SignUpEvent} from "./SignUpEvent";
 

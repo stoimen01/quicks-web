@@ -17,7 +17,11 @@ class SignInUI extends React.Component<SignInProps, SignInState> {
     constructor(props: SignInProps) {
         super(props);
         this.subscription = props.source.subscribe(state => {
-            this.setState(state);
+            if (this.state == null) {
+                this.state = state
+            } else {
+                this.setState(state)
+            }
         });
     }
 

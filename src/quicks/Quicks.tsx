@@ -1,24 +1,28 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './Quicks.css';
-import Entry from "./entry/Entry";
+import EntryUI from "./entry/EntryUI";
+import EntryCore from "./entry/EntryCore";
 
-interface P {}
+interface P {
+}
 
-interface S {}
+interface S {
+}
 
 class Quicks extends Component<P, S> {
 
-  constructor(props: P) {
-    super(props);
-  }
+    constructor(props: P) {
+        super(props);
+    }
 
-  render() {
-    return (
-        <div className="App">
-          <Entry/>
-        </div>
-    );
-  }
+    render() {
+        let core = new EntryCore();
+        return (
+            <div className="App">
+                <EntryUI sink={core.eventsIn} source={core.statesOut}/>
+            </div>
+        );
+    }
 
 }
 

@@ -16,7 +16,9 @@ let reducer = (lastResult: ReduceResult<SignInState, SignInEffect>, event: SignI
         case "on-sign-in":
             result = {
                 state: lastResult.state,
-                effects: []
+                effects: [{
+                    kind: "sign-in"
+                }]
             };
             return result;
 
@@ -37,13 +39,6 @@ let reducer = (lastResult: ReduceResult<SignInState, SignInEffect>, event: SignI
             return result;
 
         case "on-password-change":
-            result = {
-                state: lastResult.state,
-                effects: []
-            };
-            return result;
-
-        case "on-sign-in-ok":
             result = {
                 state: lastResult.state,
                 effects: []

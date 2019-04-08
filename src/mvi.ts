@@ -1,5 +1,5 @@
 import {Observable, Subject} from "rxjs";
-import {flatMap, map, scan} from "rxjs/operators";
+import {flatMap, map, publishReplay, scan, startWith} from "rxjs/operators";
 
 export interface Sink<T> {
     accept(value: T): void
@@ -43,7 +43,8 @@ export abstract class Core <S, E, F> {
         let eventsIn = new Subject<E>();
 
         let resultOut = eventsIn.pipe(
-            scan<E, ReduceResult<S, F>>(reducer , initResult)
+            scan<E, ReduceResult<S, F>>(reducer , initResult),
+            startWith(initResult)
         );
 
         this.statesOut = resultOut.pipe(

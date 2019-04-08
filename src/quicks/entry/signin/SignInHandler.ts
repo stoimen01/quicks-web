@@ -1,7 +1,7 @@
 import {assertNever, Sink, Source} from "../../../mvi";
 import {SignInEffect} from "./SignInEffects";
 import {SignInEvent} from "./SignInEvent";
-import {EntryEvent} from "../EntryEvents";
+import {EntryEvent} from "../EntryEvent";
 
 class SignInHandler {
 
@@ -13,8 +13,8 @@ class SignInHandler {
         source.subscribe(effect => {
             switch (effect.kind) {
                 case "sign-in":
-                    signInSink.accept({
-                        kind: "on-sign-in-ok"
+                    entrySink.accept({
+                        kind: "on-sign-in-success"
                     });
                     break;
                 case "sign-up":
