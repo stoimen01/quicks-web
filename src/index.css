@@ -1,15 +1,37 @@
 body {
+  background: #fff;
+  color: rgba(0,0,0,.87);
+  direction: ltr;
+  font-family: 'Roboto',sans-serif;
+  font-size: 14px;
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: #f0efee;
+  line-height: 1.4286;
+}
+
+body, input, textarea, select, button {
+  color: #202124;
+  font-family: roboto,'Noto Sans Myanmar UI',arial,sans-serif;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+label, input, button {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
+
+button {
+  width: 80px;
+  height: 30px;
+  border: 1px solid white;
+  border-radius: 8px;
+  background: #5c91ff;
+  color: white;
+  margin-top: 10px;
+
 }

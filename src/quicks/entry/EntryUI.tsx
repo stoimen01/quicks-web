@@ -5,6 +5,7 @@ import {EntryEvent} from "./EntryEvent";
 import {EntryState} from "./EntryState";
 import SignUpBuilder from "./signup/SignUpBuilder";
 import SignInBuilder from "./signin/SignInBuilder";
+import './EntryUI.css'
 
 export interface EntryProps {
     sink: Sink<EntryEvent>
@@ -35,13 +36,25 @@ class EntryUI extends React.Component<EntryProps, EntryState> {
 
     render() {
         if (this.state == null) return null;
+        let mainElement;
         switch (this.state.kind) {
             case "sign-in":
-                return SignInBuilder.build(this.props.sink);
+                mainElement = SignInBuilder.build(this.props.sink);
+                break;
             case "sign-up":
-                return SignUpBuilder.build(this.props.sink);
-            default: return assertNever(this.state);
+                mainElement = SignUpBuilder.build(this.props.sink);
+                break;
+            default: assertNever(this.state);
         }
+
+        return (
+            <div className="entry-field">
+                <div className="entry-box">
+                    <div className="entry-title"> Quicks </div>
+                    {mainElement}
+                </div>
+            </div>
+        )
     }
 }
 

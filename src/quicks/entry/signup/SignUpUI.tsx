@@ -46,17 +46,15 @@ class SignUpUI extends React.Component<SignInProps, SignUpState> {
 
     render() {
         return (
-            <div className="field-sign-in">
-                <div className="form-sign-in">
-                    <label>Username: </label>
-                    <input type="text" onChange={this.onNameChange}/>
-                    <label>Email: </label>
-                    <input type="text" onClick={this.onPasswordChange}/>
-                    <label>Password: </label>
-                    <input type="password" onClick={this.onEmailChange}/>
-                    <button onClick={ this.onSignInClick }> Sign In </button>
-                    <button onClick={ this.onSignUpClick }> Sign Up </button>
-                </div>
+            <div className="form-sign-in">
+                <label>Username: </label>
+                <input type="text" onChange={this.onNameChange}/>
+                <label>Email: </label>
+                <input type="text" onClick={this.onPasswordChange}/>
+                <label>Password: </label>
+                <input type="password" onClick={this.onEmailChange}/>
+                <button onClick={ this.onSignInClick }> Sign In </button>
+                <button onClick={ this.onSignUpClick }> Sign Up </button>
             </div>
         );
     }
