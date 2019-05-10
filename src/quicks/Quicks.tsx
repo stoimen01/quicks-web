@@ -24,6 +24,8 @@ class Quicks extends Component<P, S> {
         const rtcManager = new RtcManager(quicksClient, wsClient, rtcAgent);
 
         rtcManager.start((event) => {
+            console.log("STREAM BABY");
+            console.log(event);
             this.remoteVideo.current.srcObject = event.stream;
         })
     }

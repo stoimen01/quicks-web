@@ -1,3 +1,4 @@
+
 export interface RtcListener {
     onIceCandidate: (event:any) => void,
     onLocalDesc: (desc: any) => void,
@@ -15,20 +16,16 @@ export class RtcAgent {
             this.pc = new RTCPeerConnection(config);
 
             this.pc.onicecandidate = (event: any) => {
-                console.log('icecandidate event: ', event);
                 this.listener.onIceCandidate(event);
             };
 
             this.pc.onaddstream = (event: any) => {
-                console.log('Remote stream added.');
                 this.listener.onStream(event);
             };
 
             this.pc.onremovestream = (event: any) => {
-                console.log('Remote stream removed. Event: ', event);
+                console.log('ON REMOVE STREAM');
             };
-
-            console.log('Created RTCPeerConnection');
         } catch (e) {
             console.log('Failed to create PeerConnection, exception: ' + e.message);
             console.log('Cannot create RTCPeerConnection object.');
@@ -36,23 +33,43 @@ export class RtcAgent {
         }
     };
 
-    onOffer(offer: any) {
-        this.pc.setRemoteDescription(new RTCSessionDescription(offer));
-        this.pc.createAnswer().then(
-            (sessionDescription: any) => {
-                this.pc.setLocalDescription(sessionDescription);
-                console.log('setLocalAndSendMessage sending message', sessionDescription);
-                this.listener.onLocalDesc(sessionDescription);
-            },
-            (error: any) => {
-                console.log('Failed to create session description: ' + error.toString());
-            }
-        );
+    createOffer() {
+        const constraints = {
+            audio: true,
+            video: true
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then((stream) => {
+                this.pc.addStream(stream);
+                this.pc.createDataChannel('DataBaby', null);
+                this.pc.createOffer().then(
+                    (sessionDescription: any) => {
+                        this.pc.setLocalDescription(sessionDescription)
+                            .then(() => {
+                                this.listener.onLocalDesc(sessionDescription);
+                            }, (err: any) => {
+                                console.log('LOCAL DESC SET ERROR', err);
+                            });
+                    },
+                    (err: any) => {
+                        console.log('CREATE OFFER ERROR', err);
+                    }
+                );
+            })
+            .catch(function (e) {
+                console.log('getUserMedia() error: ' + e.name);
+            });
     }
 
-    onRemoteDesc(desc: any) {
+    onAnswer(offer: any) {
         if (!this.pc) return;
-        this.pc.setRemoteDescription(new RTCSessionDescription(desc));
+        this.pc.setRemoteDescription(new RTCSessionDescription(offer))
+            .then(() => {
+                console.log("REMOTE DESCRIPTION SET")
+            }, (err: any) => {
+                console.log('REMOTE DESCRIPTION SET ERROR', err);
+            });
     }
 
     onIceCandidate(json: any) {
@@ -61,6 +78,11 @@ export class RtcAgent {
             sdpMLineIndex: json.label,
             candidate: json.candidate
         });
-        this.pc.addIceCandidate(candidate);
+        this.pc.addIceCandidate(candidate)
+            .then(() => {
+                console.log("ICE CANDIDATE SET")
+            }, (err: any) => {
+                console.log('ICE CANDIDATE SET ERROR', err);
+            });
     }
 }

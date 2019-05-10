@@ -9,7 +9,17 @@ export class WsClient {
         private url: string
     ){
         this.ws = webSocket<any>({
-            url: this.url
+            url: this.url,
+            openObserver: {
+                next : () => {
+                    console.log("SOCKET OPEN")
+                }
+            },
+            closeObserver: {
+                next: () => {
+                    console.log("SOCKET CLOSED")
+                }
+            }
         });
         this.initWs();
     }
@@ -24,6 +34,7 @@ export class WsClient {
 
     private initWs() {
         this.ws.subscribe(
+            () => {},
             (err) => {
                 console.log("WS ERROR :");
                 console.log(err);

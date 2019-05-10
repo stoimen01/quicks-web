@@ -18,16 +18,18 @@ export class RtcManager {
             rtcAgent.createPeerConnection(servers, {
                 onIceCandidate: (event: any) => {
                     if (event.candidate) {
-                        wsClient.sendMsg(JSON.stringify({
+                        console.log("SENDING ICE CANDIDATE");
+                        wsClient.sendMsg({
                             type: 'candidate',
                             label: event.candidate.sdpMLineIndex,
                             id: event.candidate.sdpMid,
                             candidate: event.candidate.candidate
-                        }));
+                        });
                     }
                 },
                 onLocalDesc: (desc: any) => {
-                    wsClient.sendMsg(JSON.stringify(desc));
+                    console.log("SENDING OFFER");
+                    wsClient.sendMsg(desc);
                 },
                 onStream: (event: any) => {
                     onStream(event);
@@ -35,19 +37,17 @@ export class RtcManager {
             });
 
             wsClient.subscribe((message) => {
-                console.log('Client received message:', message);
-                let jsonData = JSON.parse(message.data);
-                let type = jsonData.type;
-                if (type === 'offer') {
-                    console.log('Sending answer to peer.');
-                    rtcAgent.onOffer(jsonData)
-                } else if (type === 'answer') {
-                    rtcAgent.onRemoteDesc(jsonData);
+                let type = message.type;
+                if (type === 'answer') {
+                    console.log('RECEIVED ANSWER.');
+                    rtcAgent.onAnswer(message)
                 } else if (type === 'candidate') {
-                    rtcAgent.onIceCandidate(jsonData)
+                    console.log('RECEIVED CANDIDATE.');
+                    rtcAgent.onIceCandidate(message)
                 }
             });
 
+            rtcAgent.createOffer()
         });
     }
 
