@@ -47,7 +47,7 @@ export class RtcManager {
                 }
             });
 
-            rtcAgent.createOffer()
+            //rtcAgent.createOffer()
         });
     }
 

@@ -1,7 +1,19 @@
-import {EntryState, SignIn} from "./EntryState";
 import {EntryEvent} from "./EntryEvent";
 import {assertNever, Core, ReduceResult} from "../../mvi";
-import EntryEffect from "./EntryEffect";
+
+interface EntryEffect {
+}
+
+/* STATE */
+export interface SignIn {
+    kind: "sign-in"
+}
+
+export interface SignUp {
+    kind: "sign-up"
+}
+
+export type EntryState = SignIn | SignUp
 
 let initState: SignIn = {
     kind: "sign-in"
@@ -21,20 +33,6 @@ let reducer = (lastResult: ReduceResult<EntryState, EntryEffect>, event: EntryEv
         case "on-sign-up":
             result = {
                 state: {kind: "sign-up"},
-                effects: []
-            };
-            return result;
-
-        case "on-sign-in-success":
-            result = {
-                state: lastResult.state,
-                effects: []
-            };
-            return result;
-
-        case "on-sign-up-success":
-            result = {
-                state: lastResult.state,
                 effects: []
             };
             return result;

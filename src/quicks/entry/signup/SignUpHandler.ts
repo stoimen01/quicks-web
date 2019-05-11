@@ -2,24 +2,26 @@ import {assertNever, Sink, Source} from "../../../mvi";
 import {EntryEvent} from "../EntryEvent";
 import {SignUpEffect} from "./SignUpEffect";
 import {SignUpEvent} from "./SignUpEvent";
+import {QuicksEvent} from "../../Quicks";
 
 class SignUpHandler {
 
     constructor(
-        private source: Source<SignUpEffect>,
-        private signInSink: Sink<SignUpEvent>,
-        private entrySink: Sink<EntryEvent>
+        private signUpEffects: Source<SignUpEffect>,
+        private signUpEvents: Sink<SignUpEvent>,
+        private entryEvents: Sink<EntryEvent>,
+        private quicksSink: Sink<QuicksEvent>
     ) {
-        source.subscribe(effect => {
+        signUpEffects.subscribe(effect => {
             switch (effect.kind) {
-                case "sign-in":
-                    entrySink.accept({
-                        kind: "on-sign-in"
+                case "sign-up":
+                    quicksSink.accept({
+                        kind: "signed-up"
                     });
                     break;
-                case "sign-up":
-                    signInSink.accept({
-                        kind: "on-sign-up-ok"
+                case "sign-in":
+                    entryEvents.accept({
+                        kind: "on-sign-in"
                     });
                     break;
                 default: return assertNever(effect);

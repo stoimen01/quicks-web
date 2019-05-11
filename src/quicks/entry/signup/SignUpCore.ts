@@ -26,7 +26,9 @@ let reducer = (lastResult: ReduceResult<SignUpState, SignUpEffect>, event: SignU
         case "on-sign-up":
             result = {
                 state: lastResult.state,
-                effects: []
+                effects: [{
+                    kind: "sign-up"
+                }]
             };
             return result;
 

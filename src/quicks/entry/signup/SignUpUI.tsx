@@ -1,28 +1,32 @@
 import * as React from 'react';
-import {Sink, Source} from "../../../mvi";
-import './SignUpUI.css'
+import {MviComponent, MviProps} from "../../../mvi";
 import {SignUpEvent} from "./SignUpEvent";
 import {SignUpState} from "./SignUpState";
-import {Subscription} from "rxjs";
+import {createStyles, Theme, withStyles, WithStyles} from "@material-ui/core";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Input from "@material-ui/core/Input";
+import Button from "@material-ui/core/Button";
 
-export interface SignInProps {
-    sink: Sink<SignUpEvent>
-    source: Source<SignUpState>
+const styles = (theme: Theme) => createStyles({
+    form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing.unit,
+    },
+    submit: {
+        marginTop: theme.spacing.unit * 3,
+    },
+});
+
+export interface SignInProps extends
+    MviProps<SignUpState, SignUpEvent>,
+    WithStyles<typeof styles> {
 }
 
-class SignUpUI extends React.Component<SignInProps, SignUpState> {
-
-    private subscription: Subscription;
+class SignUpUI extends MviComponent<SignInProps, SignUpState> {
 
     constructor(props: SignInProps) {
         super(props);
-        this.subscription = props.source.subscribe(state => {
-            this.setState(state);
-        });
-    }
-
-    componentWillUnmount(): void {
-        this.subscription.unsubscribe()
     }
 
     onSignInClick = () => this.props.sink.accept({kind: "on-sign-in"});
@@ -45,20 +49,43 @@ class SignUpUI extends React.Component<SignInProps, SignUpState> {
     });
 
     render() {
+        const { classes } = this.props;
         return (
-            <div className="form-sign-in">
-                <label>Username: </label>
-                <input type="text" onChange={this.onNameChange}/>
-                <label>Email: </label>
-                <input type="text" onClick={this.onPasswordChange}/>
-                <label>Password: </label>
-                <input type="password" onClick={this.onEmailChange}/>
-                <button onClick={ this.onSignInClick }> Sign In </button>
-                <button onClick={ this.onSignUpClick }> Sign Up </button>
+            <div className={classes.form}>
+                <FormControl margin="normal" required fullWidth>
+                    <InputLabel htmlFor="username">Username</InputLabel>
+                    <Input id="username" name="username" autoComplete="username" onChange={this.onNameChange} autoFocus />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                    <InputLabel htmlFor="email">Email Address</InputLabel>
+                    <Input id="email" name="email" autoComplete="email" onChange={this.onEmailChange} />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                    <InputLabel htmlFor="password">Password</InputLabel>
+                    <Input name="password" type="password" id="password" autoComplete="current-password" onChange={this.onPasswordChange} />
+                </FormControl>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    onClick={ this.onSignUpClick }>
+                    >
+                    Sign up
+                </Button>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    className={classes.submit}
+                    onClick={ this.onSignInClick }>
+                    >
+                    Sign in
+                </Button>
             </div>
         );
     }
 
 }
 
-export default SignUpUI;
+export default withStyles(styles)(SignUpUI);

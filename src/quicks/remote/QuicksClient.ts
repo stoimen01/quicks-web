@@ -17,6 +17,9 @@ class QuicksClient {
         xhr.open("GET", this.url, true);
         xhr.send();
     }
+
+
+
 }
 
 export default QuicksClient;

@@ -4,15 +4,22 @@ import {EntryEvent} from "../EntryEvent";
 import SignInCore from "./SignInCore";
 import SignInHandler from "./SignInHandler";
 import SignInUI from "./SignInUI";
+import {QuicksEvent} from "../../Quicks";
 
 class SignInBuilder {
 
-    public static build(sink: Sink<EntryEvent>) {
+    constructor(
+        private entrySink: Sink<EntryEvent>,
+        private quicksSink: Sink<QuicksEvent>
+    ) {}
+
+    public build() {
         let signUpCore = new SignInCore();
         let signUpHandler = new SignInHandler(
             signUpCore.effectsOut,
             signUpCore.eventsIn,
-            sink
+            this.entrySink,
+            this.quicksSink
         );
         return (
             <SignInUI sink={signUpCore.eventsIn} source={signUpCore.statesOut}> </SignInUI>

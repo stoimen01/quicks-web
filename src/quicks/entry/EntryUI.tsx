@@ -1,61 +1,82 @@
 import * as React from 'react';
-import {assertNever, Sink, Source} from "../../mvi";
-import {Subscription} from "rxjs";
+import {assertNever, MviComponent, MviProps} from "../../mvi";
 import {EntryEvent} from "./EntryEvent";
-import {EntryState} from "./EntryState";
 import SignUpBuilder from "./signup/SignUpBuilder";
 import SignInBuilder from "./signin/SignInBuilder";
-import './EntryUI.css'
+import {createStyles, Theme, withStyles, WithStyles} from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Avatar from "@material-ui/core/Avatar";
+import Typography from "@material-ui/core/Typography";
+import {EntryState} from "./EntryCore";
 
-export interface EntryProps {
-    sink: Sink<EntryEvent>
-    source: Source<EntryState>
+const styles = (theme: Theme) => createStyles({
+    main: {
+        width: 'auto',
+        display: 'block', // Fix IE 11 issue.
+        marginLeft: theme.spacing.unit * 3,
+        marginRight: theme.spacing.unit * 3,
+        [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
+            width: 400,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+        },
+    },
+    paper: {
+        marginTop: theme.spacing.unit * 8,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+    },
+    avatar: {
+        margin: theme.spacing.unit,
+        backgroundColor: theme.palette.secondary.main,
+    }
+});
+
+export interface EntryProps extends
+    MviProps<EntryState, EntryEvent>,
+    WithStyles<typeof styles> {
+    signInBuilder: SignInBuilder
+    signUpBuilder: SignUpBuilder
 }
 
-class EntryUI extends React.Component<EntryProps, EntryState> {
-
-    private subscription: Subscription;
+class EntryUI extends MviComponent<EntryProps, EntryState> {
 
     constructor(props: EntryProps) {
         super(props);
-        this.subscription = this.props.source
-            .subscribe(state => {
-                console.log(state);
-                if (this.state == null) {
-                    this.state = state
-                } else {
-                    this.setState(state);
-                }
-
-            })
-    }
-
-    componentWillUnmount(): void {
-        this.subscription.unsubscribe()
     }
 
     render() {
-        if (this.state == null) return null;
         let mainElement;
+        let title;
         switch (this.state.kind) {
             case "sign-in":
-                mainElement = SignInBuilder.build(this.props.sink);
+                mainElement = this.props.signInBuilder.build();
+                title = "Sign in";
                 break;
             case "sign-up":
-                mainElement = SignUpBuilder.build(this.props.sink);
+                mainElement = this.props.signUpBuilder.build();
+                title = "Sign up";
                 break;
             default: assertNever(this.state);
         }
 
+        let {classes} = this.props;
+
         return (
-            <div className="entry-field">
-                <div className="entry-box">
-                    <div className="entry-title"> Quicks </div>
-                    {mainElement}
-                </div>
-            </div>
-        )
+            <main className={classes.main}>
+                <Paper className={classes.paper}>
+                    <Avatar className={classes.avatar}>
+                        <LockOutlinedIcon />
+                    </Avatar>
+                    <Typography component="h1" variant="h5">{title}</Typography>
+                    { mainElement }
+                </Paper>
+            </main>
+        );
     }
 }
 
-export default EntryUI;
+export default withStyles(styles)(EntryUI);
