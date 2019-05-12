@@ -1,5 +1,5 @@
 export interface SignInState {
     isLoading: boolean
-    username: string
+    email: string
     password: string
 }

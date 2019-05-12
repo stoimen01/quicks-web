@@ -1,28 +1,31 @@
-import {assertNever, Core, ReduceResult} from "../../../mvi";
+import {assertNever, Core, CoreResult} from "../../../mvi";
 import {SignInEvent} from "./SignInEvent";
 import {SignInEffect} from "./SignInEffects";
 import {SignInState} from "./SignInState";
 
 let initState = {
     isLoading: false,
-    username: "",
+    email: "",
     password: ""
 };
 
-let reducer = (lastResult: ReduceResult<SignInState, SignInEffect>, event: SignInEvent) => {
-    let result: ReduceResult<SignInState, SignInEffect>;
+let reducer = (lastResult: CoreResult<SignInState, SignInEffect>, event: SignInEvent) => {
+    let result: CoreResult<SignInState, SignInEffect>;
+    let { state: lastState } = lastResult;
     switch (event.kind) {
 
-        case "on-sign-in":
+        case "sign-in-clicked":
             result = {
-                state: lastResult.state,
+                state: { ...lastState, isLoading: true },
                 effects: [{
-                    kind: "sign-in"
+                    kind: "sign-in",
+                    email: lastResult.state.email,
+                    password: lastResult.state.password
                 }]
             };
             return result;
 
-        case "on-sign-up":
+        case "sign-up-clicked":
             result = {
                 state: lastResult.state,
                 effects: [{
@@ -31,23 +34,23 @@ let reducer = (lastResult: ReduceResult<SignInState, SignInEffect>, event: SignI
             };
             return result;
 
-        case "on-name-change":
+        case "email-changed":
             result = {
-                state: lastResult.state,
+                state: { ...lastState, email: event.email },
                 effects: []
             };
             return result;
 
-        case "on-password-change":
+        case "password-changed":
             result = {
-                state: lastResult.state,
+                state: { ...lastState, password: event.password },
                 effects: []
             };
             return result;
 
-        case "on-sign-in-error":
+        case "sign-in-failed":
             result = {
-                state: lastResult.state,
+                state: { ...lastState, isLoading: false },
                 effects: []
             };
             return result;

@@ -1,10 +1,10 @@
-export interface OnSignIn {
-    kind: "on-sign-in";
+export interface SignInClicked {
+    kind: "sign-in-clicked";
 }
 
-export interface OnSignUp {
-    kind: "on-sign-up";
+export interface SignUpClicked {
+    kind: "sign-up-clicked";
 }
 
 export type EntryEvent =
-    OnSignIn | OnSignUp
+    SignInClicked | SignUpClicked

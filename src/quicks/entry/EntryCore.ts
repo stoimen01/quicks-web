@@ -1,5 +1,5 @@
 import {EntryEvent} from "./EntryEvent";
-import {assertNever, Core, ReduceResult} from "../../mvi";
+import {assertNever, Core, CoreResult} from "../../mvi";
 
 interface EntryEffect {
 }
@@ -19,18 +19,18 @@ let initState: SignIn = {
     kind: "sign-in"
 };
 
-let reducer = (lastResult: ReduceResult<EntryState, EntryEffect>, event: EntryEvent) => {
-    let result: ReduceResult<EntryState, EntryEffect>;
+let reducer = (lastResult: CoreResult<EntryState, EntryEffect>, event: EntryEvent) => {
+    let result: CoreResult<EntryState, EntryEffect>;
     switch (event.kind) {
 
-        case "on-sign-in":
+        case "sign-in-clicked":
             result = {
                 state: {kind: "sign-in"},
                 effects: []
             };
             return result;
 
-        case "on-sign-up":
+        case "sign-up-clicked":
             result = {
                 state: {kind: "sign-up"},
                 effects: []

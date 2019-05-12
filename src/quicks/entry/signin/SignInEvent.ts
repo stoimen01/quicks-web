@@ -1,30 +1,25 @@
-export interface OnSignIn {
-    kind: "on-sign-in";
+export interface SignInClicked {
+    kind: "sign-in-clicked";
 }
 
-export interface OnSignUp {
-    kind: "on-sign-up";
+export interface SignUpClicked {
+    kind: "sign-up-clicked";
 }
 
-export interface OnNameChange {
-    kind: "on-name-change";
-    username: string
+export interface EmailChanged {
+    kind: "email-changed";
+    email: string
 }
 
-export interface OnPasswordChange {
-    kind: "on-password-change";
+export interface PasswordChanged {
+    kind: "password-changed";
     password: string
 }
 
-export interface OnSignInOk {
-    kind: "on-sign-in-ok"
-}
-
-export interface OnSignInError {
-    kind: "on-sign-in-error"
+export interface SignInFailed {
+    kind: "sign-in-failed"
 }
 
 export type SignInEvent =
-    OnSignIn | OnSignUp |
-    OnNameChange | OnPasswordChange |
-    OnSignInOk | OnSignInError;
+    SignInClicked | SignUpClicked |
+    EmailChanged | PasswordChanged | SignInFailed;

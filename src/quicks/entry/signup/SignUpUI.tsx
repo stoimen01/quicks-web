@@ -29,23 +29,23 @@ class SignUpUI extends MviComponent<SignInProps, SignUpState> {
         super(props);
     }
 
-    onSignInClick = () => this.props.sink.accept({kind: "on-sign-in"});
+    onSignInClick = () => this.props.events.accept({kind: "sign-in-clicked"});
 
-    onSignUpClick = () => this.props.sink.accept({kind: "on-sign-up"});
+    onSignUpClick = () => this.props.events.accept({kind: "sign-up-clicked"});
 
-    onNameChange = (event: any) => this.props.sink.accept({
-        kind: "on-name-change",
+    onNameChange = (event: any) => this.props.events.accept({
+        kind: "name-changed",
         username: event.target.value
     });
 
-    onPasswordChange = (event: any) => this.props.sink.accept({
-        kind: "on-password-change",
-        password: event.target.value
+    onEmailChange = (event: any) => this.props.events.accept({
+        kind: "email-changed",
+        email: event.target.value
     });
 
-    onEmailChange = (event: any) => this.props.sink.accept({
-        kind: "on-email-change",
-        email: event.target.value
+    onPasswordChange = (event: any) => this.props.events.accept({
+        kind: "password-changed",
+        password: event.target.value
     });
 
     render() {

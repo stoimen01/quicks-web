@@ -1,92 +1,52 @@
 import React from 'react';
 import {WithStyles, withStyles} from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import {DeviceHub} from "@material-ui/icons";
 import {indoorStyles} from "./IndoorStyles";
 import Devices from "./things/ThingsUI";
-const classNames =  require('classnames');
+import {assertNever, MviComponent, MviProps} from "../../mvi";
+import {IndoorState} from "./IndoorState";
+import {IndoorEvent} from "./IndoorEvent";
+import IndoorDrawer from "./IndoorDrawer";
+import {Typography} from "@material-ui/core";
 
-type State = {
-    open: boolean;
-};
+export interface IndoorProps extends
+    MviProps<IndoorState, IndoorEvent>,
+    WithStyles<typeof indoorStyles> {
+}
 
-class IndoorUI extends React.Component<WithStyles<typeof indoorStyles>, State> {
+class IndoorUI extends MviComponent<IndoorProps, IndoorState> {
 
-    state = {
-        open: false,
-    };
-
-    handleDrawerOpen = () => {
-        this.setState({ open: true });
-    };
-
-    handleDrawerClose = () => {
-        this.setState({ open: false });
-    };
+    constructor(props: any) {
+        super(props)
+    }
 
     render() {
         const { classes } = this.props;
+        let connectLabel;
+        switch (this.state.kind) {
+            case "connected":
+                connectLabel = "CONNECTED";
+                break;
+            case "connecting":
+                connectLabel = "CONNECTING";
+                break;
+            default:
+                assertNever(this.state)
+        }
+
         return (
             <div className={classes.root}>
-                <AppBar
-                    position="absolute"
-                    className={classNames(classes.appBar, this.state.open && classes.appBarShift)}
-                >
-                    <Toolbar disableGutters={!this.state.open} className={classes.toolbar}>
-                        <IconButton
-                            color="inherit"
-                            aria-label="Open drawer"
-                            onClick={this.handleDrawerOpen}
-                            className={classNames(
-                                classes.menuButton,
-                                this.state.open && classes.menuButtonHidden,
-                            )}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                            Things
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
-                <Drawer
-                    variant="permanent"
-                    classes={{paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),}}
-                    open={this.state.open}
-                >
-                    <div className={classes.toolbarIcon}>
-                        <IconButton onClick={this.handleDrawerClose}>
-                            <ChevronLeftIcon />
-                        </IconButton>
-                    </div>
-                    <Divider />
-                    <List>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <DeviceHub />
-                            </ListItemIcon>
-                            <ListItemText primary="Things" />
-                        </ListItem>
-                    </List>
-                </Drawer>
+                <IndoorDrawer/>
                 <main className={classes.content}>
                     <div className={classes.appBarSpacer} />
+                    <Typography>
+                        {connectLabel}
+                    </Typography>
                     <Devices/>
                 </main>
             </div>
         );
     }
+
 }
 
 export default withStyles(indoorStyles)(IndoorUI);

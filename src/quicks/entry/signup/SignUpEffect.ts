@@ -4,7 +4,9 @@ export interface SignIn {
 
 export interface SignUp {
     kind: "sign-up";
+    username: string,
+    email: string,
+    password: string
 }
 
-export type SignUpEffect =
-    SignIn | SignUp;
+export type SignUpEffect = SignIn | SignUp;
