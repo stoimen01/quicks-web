@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {assertNever, Core, MviComponent, MviProps, ReduceResult} from "../mvi";
-import Dashboard from "./indoor/Dashboard";
+import Dashboard from "./indoor/IndoorUI";
 import {EntryBuilder} from "./entry/EntryBuilder";
 
 export interface SignedIn {
@@ -30,8 +30,8 @@ interface Indoor {
 
 type QuicksState = Entry | Indoor
 
-const initState: Entry = {
-    kind: "entry"
+const initState: Indoor = {
+    kind: "indoor"
 };
 
 const reducer = (lastResult: ReduceResult<QuicksState, QuicksEffect>, event: QuicksEvent) => {

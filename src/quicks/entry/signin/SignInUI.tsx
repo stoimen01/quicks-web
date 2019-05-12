@@ -2,7 +2,6 @@ import * as React from 'react';
 import {MviComponent, MviProps, Sink, Source} from "../../../mvi";
 import {SignInEvent} from "./SignInEvent";
 import {SignInState} from "./SignInState";
-import {Subscription} from "rxjs";
 import {createStyles, Theme, withStyles, WithStyles} from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";

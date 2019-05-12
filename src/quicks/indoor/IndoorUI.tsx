@@ -13,16 +13,15 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import {DeviceHub} from "@material-ui/icons";
-import {dashboardStyles} from "./DashboardStyles";
-import Devices from "./devices/Devices";
-
+import {indoorStyles} from "./IndoorStyles";
+import Devices from "./things/ThingsUI";
 const classNames =  require('classnames');
 
 type State = {
     open: boolean;
 };
 
-class Dashboard extends React.Component<WithStyles<typeof dashboardStyles>, State> {
+class IndoorUI extends React.Component<WithStyles<typeof indoorStyles>, State> {
 
     state = {
         open: false,
@@ -57,7 +56,7 @@ class Dashboard extends React.Component<WithStyles<typeof dashboardStyles>, Stat
                             <MenuIcon />
                         </IconButton>
                         <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                            Devices
+                            Things
                         </Typography>
                     </Toolbar>
                 </AppBar>
@@ -77,7 +76,7 @@ class Dashboard extends React.Component<WithStyles<typeof dashboardStyles>, Stat
                             <ListItemIcon>
                                 <DeviceHub />
                             </ListItemIcon>
-                            <ListItemText primary="Devices" />
+                            <ListItemText primary="Things" />
                         </ListItem>
                     </List>
                 </Drawer>
@@ -90,4 +89,4 @@ class Dashboard extends React.Component<WithStyles<typeof dashboardStyles>, Stat
     }
 }
 
-export default withStyles(dashboardStyles)(Dashboard);
+export default withStyles(indoorStyles)(IndoorUI);
