@@ -1,5 +1,5 @@
 import {Observable, Subject, Subscription} from "rxjs";
-import {flatMap, map, publish, publishReplay, refCount, scan, shareReplay, startWith, takeUntil} from "rxjs/operators";
+import {map, scan, startWith, tap} from "rxjs/operators";
 import * as React from "react";
 
 export type Source<T> = Observable<T>;
@@ -8,88 +8,13 @@ export interface Sink<T> {
     accept(value: T): void
 }
 
-export interface CoreResult<S, F> {
-    state: S,
-    effects: Array<F>
-}
-
 export class SinkSubject<T> implements Sink<T>{
 
-    constructor(private subject: Subject<T>) {
-    }
+    constructor(private subject: Subject<T>) {}
 
     accept(value: T): void {
         this.subject.next(value);
     }
-
-}
-
-export abstract class Shell <S, E, F> {
-
-    public readonly events: Sink<E>;
-    public readonly states: Source<S>;
-
-    constructor(core: Core<S, E, F>) {
-        this.events = core.events;
-        this.states = core.states;
-        core.effects.subscribe(e => {
-            this.onEffect(e)
-        })
-    }
-
-    abstract onEffect(effect: F): any
-}
-
-
-export abstract class Core <S, E, F> {
-
-    public readonly events: Sink<E>;
-
-    public readonly states: Source<S>;
-    public readonly effects: Source<F>;
-
-    protected constructor(
-        initState: S,
-        initEffects: Array<F>,
-        reducer: (lastResult: CoreResult<S, F>, event: E) => CoreResult<S, F>
-    ) {
-
-        let initResult: CoreResult<S, F> = {
-            state: initState,
-            effects: initEffects
-        };
-
-        let eventsIn = new Subject<E>();
-
-        let resultOut = eventsIn.pipe(
-            scan<E, CoreResult<S, F>>(reducer , initResult),
-            startWith(initResult)
-        );
-
-        // stop emitting effects when the UI unsubscribes
-        let effectsCleaner = new Subject();
-
-        this.states = new Observable(observer => {
-
-            const subscription = resultOut
-                .pipe(map(result => result.state))
-                .subscribe(observer);
-
-            return () => {
-                subscription.unsubscribe();
-                effectsCleaner.next({});
-                effectsCleaner.complete()
-            }
-        });
-
-        this.effects = resultOut.pipe(
-            flatMap(result => result.effects),
-            takeUntil(effectsCleaner)
-        );
-
-        this.events = new SinkSubject(eventsIn);
-    }
-
 }
 
 export interface MviProps<S, E> {
@@ -115,6 +40,54 @@ export abstract class MviComponent <P extends MviProps<S, any>, S> extends React
     componentWillUnmount(): void {
         this.subscription.unsubscribe()
     }
+}
+
+export interface CoreResult<S, F> {
+    state: S,
+    effects: Array<F>
+}
+
+export type Core <S, E, F> = (lastResult: CoreResult<S, F>, event: E) => CoreResult<S, F>;
+
+export abstract class Shell <S, E, F> {
+
+    public readonly events: Sink<E>;
+    public readonly states: Source<S>;
+    protected sub: Subscription = new Subscription();
+
+    protected constructor(
+        protected initResult: CoreResult<S, F>,
+        reducer: Core<S,E,F>
+    ) {
+        let eventsIn = new Subject<E>();
+
+        let resultOut = eventsIn.pipe(
+            scan<E, CoreResult<S, F>>(reducer , initResult),
+            startWith(initResult),
+            tap(result => {
+                result.effects.forEach((e) => {
+                    this.onEffect(e)
+                })
+            })
+        );
+
+        // creating new observable to be able to
+        // clean up resources once state stops being observed
+        this.states = new Observable(observer => {
+
+            this.sub.add(resultOut
+                .pipe(map(result => result.state))
+                .subscribe(observer));
+
+            return () => {
+                this.sub.unsubscribe();
+            }
+        });
+
+        this.events = new SinkSubject(eventsIn);
+    }
+
+    protected abstract onEffect(effect: F): void
 }
 
 export function assertNever(x: any): never {

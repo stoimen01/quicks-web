@@ -1,12 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Quicks from './quicks/Quicks';
 import {CssBaseline} from "@material-ui/core";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
-import {EntryBuilder} from "./quicks/entry/EntryBuilder";
-import {QuicksCore} from "./quicks/QuicksCore";
 import {QuicksClientImpl} from "./quicks/common/remote/QuicksClientImpl";
+import quicksBuilderOf from "./quicks/Quicks";
 
 const theme = createMuiTheme({
     typography: {
@@ -16,30 +14,16 @@ const theme = createMuiTheme({
 
 function buildQuicks() {
 
-    let client2 = new QuicksClientImpl({
+    let quicksClient = new QuicksClientImpl({
         signUpUrl: "/signup",
         signInUrl: "/signin"
     });
 
-    let core = new QuicksCore();
-
-    client2.events.subscribe(e => {
-        switch (e.kind) {
-            case "signed-up":
-                core.events.accept(e);
-                break;
-            case "signed-in":
-                core.events.accept(e);
-                break;
-        }
-    });
-
-    let entryBuilder = new EntryBuilder(client2);
-
+    let quicksBuilder = quicksBuilderOf(quicksClient);
     return (
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <Quicks states={core.states} events={core.events} entryBuilder={entryBuilder}/>
+            {quicksBuilder()}
         </MuiThemeProvider>
     );
 }

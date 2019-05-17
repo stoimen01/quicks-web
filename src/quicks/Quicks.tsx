@@ -1,63 +1,84 @@
-import React from 'react';
-import {assertNever, MviComponent, MviProps} from "../mvi";
-import IndoorUI from "./indoor/IndoorUI";
-import {EntryBuilder} from "./entry/EntryBuilder";
-import {IndoorCore} from "./indoor/IndoorCore";
-import {IndoorShell} from "./indoor/IndoorShell";
-import {QuicksState} from "./QuicksState";
+import {assertNever, Core, CoreResult, Shell} from "../mvi";
+import {Entry, QuicksState} from "./QuicksState";
+import {openConnection, QuicksEffect} from "./QuicksEffect";
 import {QuicksEvent} from "./QuicksEvent";
+import entryBuilderOf from "./entry/Entry";
+import QuicksUI from "./QuicksUI";
+import React from "react";
+import {QuicksClient2} from "./common/remote/QuicksClient2";
+import indoorBuilderOf from "./indoor/Indoor";
 
-interface QuicksProps extends MviProps<QuicksState, QuicksEvent>{
-    entryBuilder: EntryBuilder
-}
+const initState: Entry = {
+    kind: "entry"
+};
 
-class Quicks extends MviComponent<QuicksProps, QuicksState> {
+const initResult = {
+    state: initState,
+    effects: []
+};
 
-    constructor(props: QuicksProps) {
-        super(props);
+const quicksCore = (lastResult: CoreResult<QuicksState, QuicksEffect>, event: QuicksEvent) => {
+    let result: CoreResult<QuicksState, QuicksEffect>;
+    switch (event.kind) {
+        case "signed-in":
+            result = {
+                state: {
+                    kind: "indoor",
+                    token: event.token
+                },
+                effects: [openConnection()]
+            };
+            return result;
+        case "signed-up":
+            result = {
+                state: {
+                    kind: "indoor",
+                    token: event.token
+                },
+                effects: [openConnection()]
+            };
+            return result;
+        default:
+            return assertNever(event)
+    }
+};
+
+class QuicksShell extends Shell<QuicksState, QuicksEvent, QuicksEffect> {
+
+    constructor(
+        quicksClient: QuicksClient2,
+        initResult: CoreResult<QuicksState, QuicksEffect>,
+        core: Core<QuicksState, QuicksEvent, QuicksEffect>
+    ) {
+        super(initResult, core);
+        let sub = quicksClient.events.subscribe(e => {
+            switch (e.kind) {
+                case "signed-up":
+                    this.events.accept(e);
+                    break;
+                case "signed-in":
+                    this.events.accept(e);
+                    break;
+            }
+        });
+        this.sub.add(sub);
     }
 
-    render() {
-        let mainElement;
-        switch (this.state.kind) {
-            case "entry":
-                mainElement = this.props.entryBuilder.build();
-                break;
-            case "indoor":
-                let shell = new IndoorShell(new IndoorCore(), "tokeen");
-                mainElement = <IndoorUI events={shell.events} states={shell.states}/>;
-                break;
-            default: assertNever(this.state);
-        }
-
-        return mainElement;
+    protected onEffect(effect: QuicksEffect): void {
     }
-
 }
 
-export default Quicks;
+const quicksBuilderOf = (quicksClient: QuicksClient2) => () => {
+    let shell = new QuicksShell(quicksClient, initResult, quicksCore);
+    return (
+        <QuicksUI
+            states={shell.states}
+            events={shell.events}
+            buildEntry={entryBuilderOf(quicksClient)}
+            buildIndoor={indoorBuilderOf()}
+        />
+    );
+};
 
-//private readonly remoteVideo = React.createRef<any>();
 
-//const quicksClient = new QuicksClient("http://localhost:8080/ice");
-//const wsClient = new WsClient("ws://localhost:8080/ws");
-//let rtcAgent = new RtcAgent();
-//const rtcManager = new RtcManager(quicksClient, wsClient, rtcAgent);
-
-/*rtcManager.start((event) => {
-    console.log("STREAM BABY");
-    console.log(event);
-    this.remoteVideo.current.srcObject = event.stream;
-})*/
-
-/*<div className="App">
-    <h1>Quicks</h1>
-    <input type="range" min="0" max="100" step="1" value="50" onChange={this.onVerticalSliderChange}/>
-    <input type="range" min="0" max="100" step="1" value="50" onChange={this.onHorizontalSliderChange}/>
-    <Button variant="contained" color="primary">
-        Hello world
-    </Button>
-    <div id="videos">
-        <video ref={this.remoteVideo} autoPlay playsInline/>
-    </div>
-</div>*/
+export default quicksBuilderOf;

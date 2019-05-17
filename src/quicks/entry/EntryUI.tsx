@@ -1,14 +1,12 @@
 import * as React from 'react';
 import {assertNever, MviComponent, MviProps} from "../../mvi";
 import {EntryEvent} from "./EntryEvent";
-import SignUpBuilder from "./signup/SignUpBuilder";
-import SignInBuilder from "./signin/SignInBuilder";
 import {createStyles, Theme, withStyles, WithStyles} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
-import {EntryState} from "./EntryCore";
+import {EntryState} from "./Entry";
 
 const styles = (theme: Theme) => createStyles({
     main: {
@@ -38,8 +36,8 @@ const styles = (theme: Theme) => createStyles({
 export interface EntryProps extends
     MviProps<EntryState, EntryEvent>,
     WithStyles<typeof styles> {
-    signInBuilder: SignInBuilder
-    signUpBuilder: SignUpBuilder
+    buildSignIn: () => JSX.Element
+    buildSignUp: () => JSX.Element
 }
 
 class EntryUI extends MviComponent<EntryProps, EntryState> {
@@ -53,11 +51,11 @@ class EntryUI extends MviComponent<EntryProps, EntryState> {
         let title;
         switch (this.state.kind) {
             case "sign-in":
-                mainElement = this.props.signInBuilder.build();
+                mainElement = this.props.buildSignIn();
                 title = "Sign in";
                 break;
             case "sign-up":
-                mainElement = this.props.signUpBuilder.build();
+                mainElement = this.props.buildSignUp();
                 title = "Sign up";
                 break;
             default: assertNever(this.state);
