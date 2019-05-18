@@ -12,7 +12,7 @@ export interface QuicksClientConfig {
     signUpUrl: string
 }
 
-class QuicksClient implements SignUpClient, SignInClient {
+class QuicksClientOld implements SignUpClient, SignInClient {
 
     constructor(
         private config: QuicksClientConfig
@@ -63,4 +63,4 @@ class QuicksClient implements SignUpClient, SignInClient {
 
 }
 
-export default QuicksClient;
+export default QuicksClientOld;

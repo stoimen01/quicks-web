@@ -1,12 +1,15 @@
 import {assertNever, Core, CoreResult, Shell} from "../mvi";
 import {Entry, QuicksState} from "./QuicksState";
-import {openConnection, QuicksEffect} from "./QuicksEffect";
 import {QuicksEvent} from "./QuicksEvent";
 import entryBuilderOf from "./entry/Entry";
 import QuicksUI from "./QuicksUI";
 import React from "react";
-import {QuicksClient2} from "./common/remote/QuicksClient2";
+import {QuicksClient} from "./common/remote/rest/QuicksClient";
 import indoorBuilderOf from "./indoor/Indoor";
+import {WsClient} from "./common/remote/ws/WsClient";
+
+interface QuicksEffect {
+}
 
 const initState: Entry = {
     kind: "entry"
@@ -21,21 +24,14 @@ const quicksCore = (lastResult: CoreResult<QuicksState, QuicksEffect>, event: Qu
     let result: CoreResult<QuicksState, QuicksEffect>;
     switch (event.kind) {
         case "signed-in":
-            result = {
-                state: {
-                    kind: "indoor",
-                    token: event.token
-                },
-                effects: [openConnection()]
-            };
-            return result;
         case "signed-up":
             result = {
                 state: {
                     kind: "indoor",
-                    token: event.token
+                    token: event.token,
+                    wsUrl: event.wsUrl
                 },
-                effects: [openConnection()]
+                effects: []
             };
             return result;
         default:
@@ -46,7 +42,7 @@ const quicksCore = (lastResult: CoreResult<QuicksState, QuicksEffect>, event: Qu
 class QuicksShell extends Shell<QuicksState, QuicksEvent, QuicksEffect> {
 
     constructor(
-        quicksClient: QuicksClient2,
+        quicksClient: QuicksClient,
         initResult: CoreResult<QuicksState, QuicksEffect>,
         core: Core<QuicksState, QuicksEvent, QuicksEffect>
     ) {
@@ -54,28 +50,27 @@ class QuicksShell extends Shell<QuicksState, QuicksEvent, QuicksEffect> {
         let sub = quicksClient.events.subscribe(e => {
             switch (e.kind) {
                 case "signed-up":
-                    this.events.accept(e);
-                    break;
                 case "signed-in":
                     this.events.accept(e);
                     break;
             }
         });
-        this.sub.add(sub);
+        this.subs.add(sub);
     }
 
-    protected onEffect(effect: QuicksEffect): void {
+    protected onEffect(e: QuicksEffect): void {
     }
+
 }
 
-const quicksBuilderOf = (quicksClient: QuicksClient2) => () => {
+const quicksBuilderOf = (quicksClient: QuicksClient, wsClient: WsClient) => () => {
     let shell = new QuicksShell(quicksClient, initResult, quicksCore);
     return (
         <QuicksUI
             states={shell.states}
             events={shell.events}
             buildEntry={entryBuilderOf(quicksClient)}
-            buildIndoor={indoorBuilderOf()}
+            buildIndoor={indoorBuilderOf(wsClient)}
         />
     );
 };

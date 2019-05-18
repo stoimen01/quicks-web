@@ -1,7 +1,7 @@
 import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {Subscription} from "rxjs";
 
-export class WsClient {
+export class WsClientOld {
 
     private ws: WebSocketSubject<any>;
 

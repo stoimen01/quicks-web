@@ -3,7 +3,7 @@ import {SignInEvent} from "./SignInEvent";
 import {SignInEffect} from "./SignInEffects";
 import {SignInState} from "./SignInState";
 import {EntryEvent} from "../EntryEvent";
-import {QuicksClient2} from "../../common/remote/QuicksClient2";
+import {QuicksClient} from "../../common/remote/rest/QuicksClient";
 import SignInUI from "./SignInUI";
 import * as React from "react";
 
@@ -70,7 +70,7 @@ class SignInShell extends Shell<SignInState, SignInEvent, SignInEffect> {
 
     constructor(
         private entrySink: Sink<EntryEvent>,
-        private quicksClient2: QuicksClient2,
+        private quicksClient2: QuicksClient,
         initResult: CoreResult<SignInState, SignInEffect>,
         core: Core<SignInState, SignInEvent, SignInEffect>
     ) {
@@ -80,7 +80,7 @@ class SignInShell extends Shell<SignInState, SignInEvent, SignInEffect> {
                 this.events.accept(e);
             }
         });
-        this.sub.add(sub);
+        this.subs.add(sub);
     }
 
     onEffect(e: SignInEffect): void {
@@ -97,7 +97,7 @@ class SignInShell extends Shell<SignInState, SignInEvent, SignInEffect> {
     }
 }
 
-let signInBuilderOf = (entrySink: Sink<EntryEvent>, quicksClient2: QuicksClient2) => {
+let signInBuilderOf = (entrySink: Sink<EntryEvent>, quicksClient2: QuicksClient) => {
     return () => {
         let signInShell = new SignInShell(entrySink, quicksClient2, initResult, signInCore);
         return <SignInUI events={signInShell.events} states={signInShell.states}> </SignInUI>

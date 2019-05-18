@@ -1,11 +1,11 @@
-import {QuicksClient2} from "./QuicksClient2";
-import {assertNever, Sink, SinkSubject, Source} from "../../../mvi";
+import {QuicksClient} from "./QuicksClient";
+import {assertNever, Sink, SinkSubject, Source} from "../../../../mvi";
 import {QuicksClientCommand} from "./QuicksClientCommand";
 import {QuicksClientEvent} from "./QuicksClientEvent";
 import {Subject} from "rxjs";
-import {QuicksClientConfig} from "./QuicksClient";
+import {QuicksClientConfig} from "../rtc/QuicksClientOld";
 
-export class QuicksClientImpl implements QuicksClient2 {
+export class QuicksClientImpl implements QuicksClient {
 
     commands: Sink<QuicksClientCommand>;
     events: Source<QuicksClientEvent>;
@@ -25,7 +25,8 @@ export class QuicksClientImpl implements QuicksClient2 {
                         .then(token => {
                             eventsOut.next({
                                 kind: "signed-in",
-                                token: token
+                                token: token,
+                                wsUrl: "ws://localhost:8080/ws"
                             });
                         })
                         .catch(reason => {
@@ -42,7 +43,8 @@ export class QuicksClientImpl implements QuicksClient2 {
                         .then(token => {
                             eventsOut.next({
                                 kind: "signed-up",
-                                token: token
+                                token: token,
+                                wsUrl: "ws://localhost:8080/ws"
                             });
                         })
                         .catch(reason => {

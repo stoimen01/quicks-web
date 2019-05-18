@@ -1,6 +1,6 @@
 import {EntryEvent} from "./EntryEvent";
 import {assertNever, Core, CoreResult, Shell} from "../../mvi";
-import {QuicksClient2} from "../common/remote/QuicksClient2";
+import {QuicksClient} from "../common/remote/rest/QuicksClient";
 import EntryUI from "./EntryUI";
 import signInBuilderOf from "./signin/SignIn";
 import signUpBuilderOf from "./signup/SignUp";
@@ -66,7 +66,7 @@ class EntryShell extends Shell<EntryState, EntryEvent, EntryEffect> {
 
 }
 
-const entryBuilderOf = (quicksClient: QuicksClient2) => {
+const entryBuilderOf = (quicksClient: QuicksClient) => {
     return () => {
         let entryShell = new EntryShell(initResult, entryCore);
         return (

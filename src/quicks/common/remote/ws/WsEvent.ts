@@ -1,8 +1,4 @@
 
-export interface SignOutClicked {
-    kind: 'sign-out-clicked'
-}
-
 export interface Connected {
     kind: "connected"
 }
@@ -15,4 +11,9 @@ export interface Failed {
     kind: "failed"
 }
 
-export type IndoorEvent = SignOutClicked | Connected | Disconnected | Failed
+export interface MessageReceived {
+    kind: "message-received"
+    msg: any
+}
+
+export type WsEvent = Connected | Disconnected | Failed | MessageReceived

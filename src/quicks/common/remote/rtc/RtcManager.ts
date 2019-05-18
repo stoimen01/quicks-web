@@ -1,12 +1,12 @@
-import QuicksClient from "../QuicksClient";
-import {WsClient} from "../WsClient";
+import QuicksClientOld from "./QuicksClientOld";
+import {WsClientOld} from "./WsClientOld";
 import {RtcAgent} from "./RtcAgent";
 
 export class RtcManager {
 
     constructor(
-        private quicksClient: QuicksClient,
-        private wsClient: WsClient,
+        private quicksClient: QuicksClientOld,
+        private wsClient: WsClientOld,
         private rtcAgent: RtcAgent
     ){}
 

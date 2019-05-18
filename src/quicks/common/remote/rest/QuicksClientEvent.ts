@@ -1,6 +1,7 @@
 interface SignedUp {
     kind: "signed-up"
     token: string
+    wsUrl: string
 }
 
 interface SignUpFailed {
@@ -10,10 +11,16 @@ interface SignUpFailed {
 interface SignedIn {
     kind: "signed-in"
     token: string
+    wsUrl: string
 }
 
 interface SignInFailed {
     kind: "sign-in-failed"
 }
 
-export type QuicksClientEvent = SignedUp | SignedIn | SignInFailed | SignUpFailed
+interface SignedOut {
+    kind: "signed-out"
+}
+
+export type QuicksClientEvent =
+    SignedUp | SignedIn | SignInFailed | SignUpFailed | SignedOut

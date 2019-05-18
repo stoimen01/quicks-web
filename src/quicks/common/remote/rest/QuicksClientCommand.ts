@@ -11,5 +11,9 @@ export interface SignUp {
     password: string
 }
 
+export interface SignOut {
+    kind: "sign-out"
+    token: string
+}
 
-export type QuicksClientCommand = SignIn | SignUp
+export type QuicksClientCommand = SignIn | SignUp | SignOut

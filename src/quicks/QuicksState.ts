@@ -3,8 +3,9 @@ export interface Entry {
 }
 
 export interface Indoor {
-    kind: "indoor",
+    kind: "indoor"
     token: string
+    wsUrl: string
 }
 
 export type QuicksState = Entry | Indoor

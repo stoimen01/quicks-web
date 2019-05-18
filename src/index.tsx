@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import {CssBaseline} from "@material-ui/core";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
-import {QuicksClientImpl} from "./quicks/common/remote/QuicksClientImpl";
+import {QuicksClientImpl} from "./quicks/common/remote/rest/QuicksClientImpl";
 import quicksBuilderOf from "./quicks/Quicks";
+import {WsClientImpl} from "./quicks/common/remote/ws/WsClientImpl";
 
 const theme = createMuiTheme({
     typography: {
@@ -19,7 +20,9 @@ function buildQuicks() {
         signInUrl: "/signin"
     });
 
-    let quicksBuilder = quicksBuilderOf(quicksClient);
+    let wsClient = new WsClientImpl();
+
+    let quicksBuilder = quicksBuilderOf(quicksClient, wsClient);
     return (
         <MuiThemeProvider theme={theme}>
             <CssBaseline />

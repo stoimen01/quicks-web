@@ -53,16 +53,16 @@ export abstract class Shell <S, E, F> {
 
     public readonly events: Sink<E>;
     public readonly states: Source<S>;
-    protected sub: Subscription = new Subscription();
+    protected subs: Subscription = new Subscription();
 
     protected constructor(
         protected initResult: CoreResult<S, F>,
-        reducer: Core<S,E,F>
+        core: Core<S,E,F>
     ) {
         let eventsIn = new Subject<E>();
 
         let resultOut = eventsIn.pipe(
-            scan<E, CoreResult<S, F>>(reducer , initResult),
+            scan<E, CoreResult<S, F>>(core , initResult),
             startWith(initResult),
             tap(result => {
                 result.effects.forEach((e) => {
@@ -75,12 +75,12 @@ export abstract class Shell <S, E, F> {
         // clean up resources once state stops being observed
         this.states = new Observable(observer => {
 
-            this.sub.add(resultOut
+            this.subs.add(resultOut
                 .pipe(map(result => result.state))
                 .subscribe(observer));
 
             return () => {
-                this.sub.unsubscribe();
+                this.subs.unsubscribe();
             }
         });
 

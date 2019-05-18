@@ -1,6 +1,11 @@
 
-export interface TrackConnection {
-    kind: 'track-connection'
+export interface Connect {
+    kind: 'connect'
+    after?: number
 }
 
-export type IndoorEffect = TrackConnection
+export interface Disconnect {
+    kind: "disconnect"
+}
+
+export type IndoorEffect = Connect | Disconnect

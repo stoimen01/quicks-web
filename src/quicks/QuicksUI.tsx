@@ -21,7 +21,7 @@ class QuicksUI extends MviComponent<QuicksProps, QuicksState> {
                 mainElement = this.props.buildEntry();
                 break;
             case "indoor":
-                mainElement = this.props.buildIndoor(this.state.token);
+                mainElement = this.props.buildIndoor(this.state.wsUrl);
                 break;
             default: assertNever(this.state);
         }
@@ -35,8 +35,8 @@ export default QuicksUI;
 
 //private readonly remoteVideo = React.createRef<any>();
 
-//const quicksClient = new QuicksClient("http://localhost:8080/ice");
-//const wsClient = new WsClient("ws://localhost:8080/ws");
+//const quicksClient = new QuicksClientOld("http://localhost:8080/ice");
+//const wsClient = new WsClientOld("ws://localhost:8080/ws");
 //let rtcAgent = new RtcAgent();
 //const rtcManager = new RtcManager(quicksClient, wsClient, rtcAgent);
 
