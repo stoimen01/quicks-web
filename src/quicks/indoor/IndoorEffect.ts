@@ -1,11 +1,4 @@
 
-export interface Connect {
-    kind: 'connect'
-    after?: number
-}
+export interface IndoorEffect {
 
-export interface Disconnect {
-    kind: "disconnect"
 }
-
-export type IndoorEffect = Connect | Disconnect

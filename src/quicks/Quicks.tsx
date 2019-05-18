@@ -6,7 +6,7 @@ import QuicksUI from "./QuicksUI";
 import React from "react";
 import {QuicksClient} from "./common/remote/rest/QuicksClient";
 import indoorBuilderOf from "./indoor/Indoor";
-import {WsClient} from "./common/remote/ws/WsClient";
+import {WsAgent} from "./common/remote/ws/WsAgent";
 
 interface QuicksEffect {
 }
@@ -27,9 +27,7 @@ const quicksCore = (lastResult: CoreResult<QuicksState, QuicksEffect>, event: Qu
         case "signed-up":
             result = {
                 state: {
-                    kind: "indoor",
-                    token: event.token,
-                    wsUrl: event.wsUrl
+                    kind: "indoor"
                 },
                 effects: []
             };
@@ -63,14 +61,14 @@ class QuicksShell extends Shell<QuicksState, QuicksEvent, QuicksEffect> {
 
 }
 
-const quicksBuilderOf = (quicksClient: QuicksClient, wsClient: WsClient) => () => {
+const quicksBuilderOf = (quicksClient: QuicksClient, wsClient: WsAgent) => () => {
     let shell = new QuicksShell(quicksClient, initResult, quicksCore);
     return (
         <QuicksUI
             states={shell.states}
             events={shell.events}
             buildEntry={entryBuilderOf(quicksClient)}
-            buildIndoor={indoorBuilderOf(wsClient)}
+            buildIndoor={indoorBuilderOf(wsClient.states)}
         />
     );
 };

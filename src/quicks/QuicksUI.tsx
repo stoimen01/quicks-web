@@ -5,7 +5,7 @@ import {QuicksEvent} from "./QuicksEvent";
 
 interface QuicksProps extends MviProps<QuicksState, QuicksEvent> {
     buildEntry: () => JSX.Element,
-    buildIndoor: (token: string) => JSX.Element
+    buildIndoor: () => JSX.Element
 }
 
 class QuicksUI extends MviComponent<QuicksProps, QuicksState> {
@@ -21,7 +21,7 @@ class QuicksUI extends MviComponent<QuicksProps, QuicksState> {
                 mainElement = this.props.buildEntry();
                 break;
             case "indoor":
-                mainElement = this.props.buildIndoor(this.state.wsUrl);
+                mainElement = this.props.buildIndoor();
                 break;
             default: assertNever(this.state);
         }

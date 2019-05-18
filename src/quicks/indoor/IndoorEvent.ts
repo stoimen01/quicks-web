@@ -7,12 +7,8 @@ export interface Connected {
     kind: "connected"
 }
 
-export interface Disconnected {
-    kind: "disconnected"
+export interface Connecting {
+    kind: "connecting"
 }
 
-export interface Failed {
-    kind: "failed"
-}
-
-export type IndoorEvent = SignOutClicked | Connected | Disconnected | Failed
+export type IndoorEvent = SignOutClicked | Connected | Connecting

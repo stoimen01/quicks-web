@@ -1,10 +1,11 @@
-import {assertNever, Core, CoreResult, Shell} from "../../mvi";
+import {assertNever, Core, CoreResult, Shell, Source} from "../../mvi";
 import {IndoorEvent} from "./IndoorEvent";
 import {IndoorState} from "./IndoorState";
 import {IndoorEffect} from "./IndoorEffect";
 import IndoorUI from "./IndoorUI";
 import React from "react";
-import {WsClient} from "../common/remote/ws/WsClient";
+import {WsAgent} from "../common/remote/ws/WsAgent";
+import {WsAgentState} from "../common/remote/ws/WsAgentState";
 
 const initState: IndoorState = {
     kind: 'connecting'
@@ -35,16 +36,12 @@ const indoorCore = (lastResult: CoreResult<IndoorState, IndoorEffect>, event: In
             };
             return result;
 
-        case "failed":
-        case "disconnected":
+        case "connecting":
             result = {
                 state: {
                     kind: "connecting"
                 },
-                effects: [{
-                    kind: "connect",
-                    after: 3
-                }]
+                effects: []
             };
             return result;
     }
@@ -53,21 +50,18 @@ const indoorCore = (lastResult: CoreResult<IndoorState, IndoorEffect>, event: In
 class IndoorShell extends Shell<IndoorState, IndoorEvent, IndoorEffect> {
 
     constructor(
-        private wsUrl: string,
-        private wsClient: WsClient,
+        wsStates: Source<WsAgentState>,
         initResult: CoreResult<IndoorState, IndoorEffect>,
         indoorCore: Core<IndoorState, IndoorEvent, IndoorEffect>,
     ) {
         super(initResult, indoorCore);
-        let sub = wsClient.events.subscribe(ev => {
-            switch (ev.kind) {
+        let sub = wsStates.subscribe(state => {
+            switch (state.kind) {
                 case "connected":
-                case "disconnected":
-                case "failed":
-                    this.events.accept(ev);
+                    this.events.accept(state);
                     break;
-                case "message-received":
-                    console.log(ev.msg);
+                case "connecting":
+                    this.events.accept(state);
                     break;
             }
         });
@@ -75,25 +69,13 @@ class IndoorShell extends Shell<IndoorState, IndoorEvent, IndoorEffect> {
     }
 
     onEffect(effect: IndoorEffect): any {
-        switch (effect.kind) {
-            case "connect":
-                this.wsClient.commands.accept({
-                    kind: "connect",
-                    after: effect.after,
-                    url: this.wsUrl
-                });
-                break;
-            case "disconnect":
-                this.wsClient.commands.accept(effect);
-                break;
-        }
     }
 
 }
 
-const indoorBuilderOf = (wsClient: WsClient) => {
-    return (wsUrl: string) => {
-        const shell = new IndoorShell(wsUrl, wsClient, initResult, indoorCore);
+const indoorBuilderOf = (wsStates: Source<WsAgentState>) => {
+    return () => {
+        const shell = new IndoorShell(wsStates, initResult, indoorCore);
         return (
             <IndoorUI events={shell.events} states={shell.states}/>
         );

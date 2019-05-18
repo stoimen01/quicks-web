@@ -5,7 +5,7 @@ import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import {QuicksClientImpl} from "./quicks/common/remote/rest/QuicksClientImpl";
 import quicksBuilderOf from "./quicks/Quicks";
-import {WsClientImpl} from "./quicks/common/remote/ws/WsClientImpl";
+import {WsAgentImpl} from "./quicks/common/remote/ws/WsAgentImpl";
 
 const theme = createMuiTheme({
     typography: {
@@ -20,7 +20,7 @@ function buildQuicks() {
         signInUrl: "/signin"
     });
 
-    let wsClient = new WsClientImpl();
+    let wsClient = new WsAgentImpl(quicksClient);
 
     let quicksBuilder = quicksBuilderOf(quicksClient, wsClient);
     return (
